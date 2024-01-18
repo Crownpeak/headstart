@@ -1,6 +1,7 @@
 import { ConnectionSection } from "../Section/ConnectionSection";
 import { ContentSection } from "../Section/ContentSection";
 import { NavigationSection } from "../Section/NavigationSection";
+import { NextSection } from "../Section/NextSection";
 import { SitemapSection } from "../Section/SitemapSection";
 
 /**
@@ -20,6 +21,8 @@ export class InfoPage {
       this.contentSection.render();
       this.sitemapSection = new SitemapSection();
       this.sitemapSection.render();
+      this.nextSection = new NextSection();
+      this.nextSection.render();
     });   
   }
 
@@ -31,6 +34,7 @@ export class InfoPage {
     this.navigationSection.render();
     this.contentSection.render();
     this.sitemapSection.render();
+    this.nextSection.render();
   }
 
   /**
