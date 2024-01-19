@@ -1,7 +1,7 @@
 import { ConnectionSection } from "../Section/ConnectionSection";
 import { ContentSection } from "../Section/ContentSection";
 import { NavigationSection } from "../Section/NavigationSection";
-import { NextSection } from "../Section/NextSection";
+import { MoreSection } from "../Section/MoreSection";
 import { SitemapSection } from "../Section/SitemapSection";
 
 /**
@@ -21,7 +21,7 @@ export class InfoPage {
       this.contentSection.render();
       this.sitemapSection = new SitemapSection();
       this.sitemapSection.render();
-      this.nextSection = new NextSection();
+      this.nextSection = new MoreSection();
       this.nextSection.render();
     });   
   }
