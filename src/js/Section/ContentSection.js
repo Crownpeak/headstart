@@ -1,36 +1,61 @@
 import { App } from "../App";
-import { HeadlessConfiguration } from "../Crownpeak/HeadlessConfiguration";
-import { DOMHelper } from "../Utility/DOMHelper";
-import Prism from 'prismjs';
+import Prism from "prismjs";
 
+/**
+ * This class is designed to showcase making requests to the CaaS.
+ * It utilizes the CaaS API to retrieve content and provides a method to display the obtained data.
+ */
 export class ContentSection {
+  /**
+   * Creates an instance of ContentSection.
+   */
   constructor() {
     this.render();
   }
 
+  /**
+   * Fetches data from the CaaS API endpoint and displays the content.
+   */
   render() {
-    const codeElement = document.querySelector("#caas-content-js");    
-    const apikey = App.config?.caasPreviewApikey ? App.config.caasPreviewApikey : "APIKEY";    
-   
+    const codeElement = document.querySelector("#caas-content-js");
+    const apikey = App.config?.caasPreviewApikey
+      ? App.config.caasPreviewApikey
+      : "APIKEY";
+
     if (App.caasConnection && App.navigationService) {
       const responseElement = document.querySelector("#caas-content-response");
       App.navigationService
-      //TODO: Language (planned for a future version)
+        //TODO: Language (planned for a future version)
         .fetchStartpage("en_GB")
-        .then((startpageInfo) => {          
-          const jsSnippet = this.getJSSnippet(startpageInfo.contentReference, apikey, startpageInfo.id);          
-          codeElement.innerHTML = Prism.highlight(jsSnippet, Prism.languages.javascript, 'javascript');
+        .then((startpageInfo) => {
+          const jsSnippet = this.getJSSnippet(
+            startpageInfo.contentReference,
+            apikey,
+            startpageInfo.id
+          );
+          codeElement.innerHTML = Prism.highlight(
+            jsSnippet,
+            Prism.languages.javascript,
+            "javascript"
+          );
           return App.caasConnection.fetchByUrl(startpageInfo.contentReference);
         })
-        .then((responseJson) => {  
+        .then((responseJson) => {
           const jsonSnippet = JSON.stringify(responseJson, null, 4);
-          responseElement.innerHTML = Prism.highlight(jsonSnippet, Prism.languages.javascript, 'javascript');
+          responseElement.innerHTML = Prism.highlight(
+            jsonSnippet,
+            Prism.languages.javascript,
+            "javascript"
+          );
         });
     } else {
       codeElement.innerHTML = this.getJSSnippet("DOCUMENT_URL", apikey);
     }
   }
 
+  /**
+   * A Javascript snippet that is displayed as an example of a request.
+   */
   getJSSnippet(documentUrl, apikey) {
     return `
       const requestUrl = new URL("${documentUrl}");
