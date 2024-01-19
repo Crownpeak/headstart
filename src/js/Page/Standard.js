@@ -1,15 +1,17 @@
 import * as TPP_SNAP from "fs-tpp-api/snap";
 import { TextImage } from "../Section/TextImage";
 import { DefaultSection } from "../Section/DefaultSection";
-import { PageSection } from "../Section/PageSection";
+import { PageHeaderSection } from "../Section/PageHeaderSection";
 import { CodeDescriptionSection } from "../Section/CodeDescriptionSection";
 
+/**
+ * Is required to render the pages of the project. The page information and all sections are output.
+ */
 export class Standard {
   constructor(data) {
     this.data = data;
     this.sectionList = [];
   }
-  
 
   /**
    * Renders the content of a webpage based on the provided data.
@@ -22,7 +24,7 @@ export class Standard {
       const page = this.data.page;
       // A simple section to output the content of the page.
       this.sectionList = [];
-      this.sectionList.push(new PageSection(page));
+      this.sectionList.push(new PageHeaderSection(page));
       this.collectSections().then(() => {
         mainElement.replaceChildren();
         this.sectionList.forEach((section) => {
@@ -35,8 +37,8 @@ export class Standard {
   /**
    * Updates the page data and renders it.
    */
-  reRender(data = null){
-    if(data){
+  reRender(data = null) {
+    if (data) {
       this.data = data;
     }
     this.render();
