@@ -1,3 +1,6 @@
+/**
+ * Holds a CaaS connection.
+ */
 export class CaaSConnection {
   constructor(caasEndpoint, apikey) {
     this.caasEndpoint = caasEndpoint;
