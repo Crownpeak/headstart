@@ -1,3 +1,8 @@
+/**
+ * This class serves as a helper for managing connection parameters
+ * essential for communication with the 
+ * Content as a Service (CaaS) and the navigation service
+ */
 export class HeadlessConfiguration {
   static CAAS_PREVIEW_ENDPOINT_FIELD = "caasPreviewEndpoint";
   static CAAS_PREVIEW_API_KEY_FIELD = "caasPreviewApikey";  
