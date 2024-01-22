@@ -2,13 +2,19 @@ import * as TPP_SNAP from "fs-tpp-api/snap";
 import { HeadlessConfiguration } from "./Crownpeak/HeadlessConfiguration";
 import { App } from "./App";
 
+/**
+ * Initializes the application
+ */
 class Initializer {
+  /**
+   * Creates an instance of Initializer.
+   */
   constructor() {
     /**
      * Try a TPP handshake
      */
     TPP_SNAP.isConnected.then((connected) => {
-      App.create(null, connected);               
+      App.create(null, connected);
       if (connected) {
         console.log("TPP_SNAP is connected");
         TPP_SNAP.onInit(this.sNAPInitHandler);
@@ -18,10 +24,10 @@ class Initializer {
 
   /**
    * Is called when the connection to the ContentCreator is established.
-   * 
+   *
    * @param {boolean} success
    */
-  sNAPInitHandler = (success) => {    
+  sNAPInitHandler = (success) => {
     if (!success) {
       return;
     }
@@ -35,9 +41,9 @@ class Initializer {
           App.setConfig(config);
         })
         .catch((error) => {
-          console.log("Error requesting TPP_SNAP config script", error);          
+          console.log("Error requesting TPP_SNAP config script", error);
         });
-    } catch(error){
+    } catch (error) {
       console.log("error", error);
     }
   };
