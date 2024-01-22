@@ -3,6 +3,10 @@ import { Modal } from "../Component/Modal";
 import { RichText } from "../Component/RichText";
 import { DOMHelper } from "../Utility/DOMHelper";
 
+/**
+ * A section that has been developed according to the existing template in the CMS.
+ * The information from the section created in the CMS is output.
+ */
 export class TextImage {
   data;
   previewId;
@@ -10,6 +14,9 @@ export class TextImage {
   text;
   imageUrl;
 
+  /**
+   * Creates an instance of TextImage.
+   */
   constructor(data) {
     this.data = data;
   }
@@ -51,6 +58,11 @@ export class TextImage {
     return textImage;
   }
 
+  /**
+   * Creates a new HTML element with the entire content of this section.
+   *
+   * @returns {HTMLElement} of this section
+   */
   render() {
     const resultElement = DOMHelper.htmlToElement(this.html());
     const devButton = resultElement.querySelector("button");
@@ -58,10 +70,17 @@ export class TextImage {
       this.showInfoModal();
     });
     const richText = new RichText(this.text);
-    DOMHelper.appendNodes(resultElement, '[data-preview-id="#st_text"]', richText.render());
+    DOMHelper.appendNodes(
+      resultElement,
+      '[data-preview-id="#st_text"]',
+      richText.render()
+    );
     return resultElement;
   }
 
+  /**
+   * Opens a dialog to display the data for this section that was provided by the caas endpoint.
+   */
   showInfoModal() {
     const modal = Modal.instance();
 
@@ -80,6 +99,11 @@ export class TextImage {
     modal.show(codeBlock);
   }
 
+  /**
+   * Returns a HTML snippet with the CaaS content.
+   *
+   * @returns {String} html
+   */
   html() {
     return `<section class="w-full relative" data-preview-id="${this.previewId}">
                   <div class="pt-6 lg:px-8 lg:pt-8 pb-12 xl:pb-24 lg:pb-16">
