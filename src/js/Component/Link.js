@@ -2,9 +2,12 @@ import { DOMHelper } from "../Utility/DOMHelper";
 import { App } from "../App";
 
 /**
- * Used to create links inside of a rich text.  
+ * Used to create links inside of a rich text.
  */
 export class Link {
+  /**
+   * Creates an instance of Link.
+   */
   constructor(type, data) {
     this.type = type;
     this.data = data;
@@ -12,7 +15,7 @@ export class Link {
 
   /**
    * Creates a link, differentiating by type.
-   * 
+   *
    * @returns {HTMLElement} a link
    */
   render() {

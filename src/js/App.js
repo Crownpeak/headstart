@@ -8,6 +8,9 @@ import { Navigation } from "./Component/Navigation";
 
 import * as TPP_SNAP from "fs-tpp-api/snap";
 
+/**
+ * The HeadStart application
+ */
 export class App {
   static config;
   static isContentCreator;
@@ -43,6 +46,13 @@ export class App {
     }
   }
 
+  /**
+   * This method saves a passed configuration, attempts to establish a new connection
+   * using the specified configuration and triggers a new display of the application
+   * if the connection is successful.
+   *
+   * @param {HeadlessConfiguration} config
+   */
   static setConfig(config) {
     this.storeConfigToSessionStorage(config);
     this.config = config;
@@ -51,15 +61,33 @@ export class App {
     });
   }
 
+  /**
+   * Saves a configuration in the browser's session storage.
+   *
+   * @param {HeadlessConfiguration} config
+   */
   static storeConfigToSessionStorage(config) {
     localStorage.setItem("config", JSON.stringify(config));
   }
 
+  /**
+   * Loads a configuration from the browser's session storage.
+   * 
+   * @returns {JSON}
+   */
   static loadConfigFromSessionStorage() {
     const configString = localStorage.getItem("config");
     return configString ? JSON.parse(configString) : null;
   }
 
+  /**
+   * This method is responsible for initializing 
+   * custom handling of browser navigation buttons such
+   * as 'Back' and 'Forward,' as well as internal 
+   * links within the application.
+   * 
+   * @returns {JSON}
+   */
   static initInternalNavigation() {
     // Browser back and forward
     window.addEventListener("popstate", (event) => {
@@ -83,6 +111,10 @@ export class App {
     });
   }
 
+    /**
+   * When we are in the preview of the CMS ContentCreator, 
+   * CallBack functions must be defined for various actions.   
+   */
   static initSNAPTPP() {
     TPP_SNAP.onRequestPreviewElement(async (previewId) => {
       // Check if the given previewId is known by the router.
@@ -101,6 +133,13 @@ export class App {
     });
   }
 
+
+  /**
+   * When a configuration is provided, this method endeavors
+   * to establish connections to both the Content as a Service (CaaS)
+   * and the navigation service. Additionally, it initializes 
+   * the router and navigation.
+   */
   static async connect() {
     if (this.config) {
       // Create and test the caas connection
@@ -183,6 +222,9 @@ export class App {
     }
   }
 
+  /**
+   * This method attempts to generate the page.
+   */
   static render() {
     this.getPage().then((page) => {
       this.page = page;
@@ -193,6 +235,14 @@ export class App {
     });
   }
 
+  /**
+   * This method tries to fetch a relevant document
+   * from the Content as a Service (CaaS) based on the current route. 
+   * Upon finding a corresponding document, it looks for a 
+   * suitable page implementation and proceeds to instantiate a new object.
+   * 
+   * @returns a page 
+   */
   static getPage() {
     return new Promise((resolve, reject) => {
       if (this.currentRoute.path === "/") {
@@ -211,6 +261,9 @@ export class App {
     });
   }
 
+  /**
+   * Render the current page again.
+   */
   static reRender() {
     this.page.reRender();
     if (this.navigation) {

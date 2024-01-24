@@ -3,8 +3,14 @@ import { Modal } from "../Component/Modal";
 import { HeadlessConfiguration } from "../Crownpeak/HeadlessConfiguration";
 import { DOMHelper } from "../Utility/DOMHelper";
 
+/**
+ * Section for displaying and changing the connection parameters for the CaaS and navigation endpoint.
+ */
 export class ConnectionSection {
-  constructor() {    
+  /**
+   * Creates an instance of ConnectionSection.
+   */
+  constructor() {
     this.connectionStatusElement = document.querySelector("#connection-status");
     this.caasEndpointInput = document.querySelector(
       "#connection-parameters [name=caas-endpoint]"
@@ -20,18 +26,30 @@ export class ConnectionSection {
     this.connectReleaseParametersButton();
   }
 
+  /**
+   * Passes the currently set connection parameters to the app.
+   *
+   * @param {*} event of the user action
+   */
   updateConfig(event) {
     event.preventDefault();
-    if(this.caasEndpointInput.value && this.caasApikeyInput.value && this.caasNavEndpointInput.value){
+    if (
+      this.caasEndpointInput.value &&
+      this.caasApikeyInput.value &&
+      this.caasNavEndpointInput.value
+    ) {
       const newConfig = new HeadlessConfiguration(
         this.caasEndpointInput.value,
         this.caasApikeyInput.value,
         this.caasNavEndpointInput.value
       );
       App.setConfig(newConfig);
-    }    
+    }
   }
 
+  /**
+   * Connects a action to the save button.
+   */
   connectSaveButton() {
     const saveConBtn = document.querySelector(
       "#connection-parameters [name=save-connect]"
@@ -39,22 +57,40 @@ export class ConnectionSection {
     saveConBtn.addEventListener("click", this.updateConfig.bind(this));
   }
 
+  /**
+   * Connects a action to the button to show the release connection parameters.
+   */
   connectReleaseParametersButton() {
     const connectRelParBtn = document.querySelector(
       "#connection-parameters-release"
     );
     connectRelParBtn.addEventListener("click", () => {
       const modal = Modal.instance();
-      const content = DOMHelper.htmlToElement(this.getReleaseParameterContent(App.config.caasReleaseEndpoint, App.config.caasReleaseApikey, App.config.navigationReleaseEndpoint));
+      const content = DOMHelper.htmlToElement(
+        this.getReleaseParameterContent(
+          App.config.caasReleaseEndpoint,
+          App.config.caasReleaseApikey,
+          App.config.navigationReleaseEndpoint
+        )
+      );
       modal.show(content);
     });
   }
 
+  /**
+   * Displays the current status of the connection and the parameters.
+   */
   render() {
     if (App.config) {
-      this.caasEndpointInput.value = App.config.caasPreviewEndpoint ? App.config.caasPreviewEndpoint : "CaaS Endpoint" ;
-      this.caasApikeyInput.value = App.config.caasPreviewApikey ? App.config.caasPreviewApikey : "API Key";
-      this.caasNavEndpointInput.value = App.config.navigationPreviewEndpoint ? App.config.navigationPreviewEndpoint : "Navigation Service Endpoint";
+      this.caasEndpointInput.value = App.config.caasPreviewEndpoint
+        ? App.config.caasPreviewEndpoint
+        : "CaaS Endpoint";
+      this.caasApikeyInput.value = App.config.caasPreviewApikey
+        ? App.config.caasPreviewApikey
+        : "API Key";
+      this.caasNavEndpointInput.value = App.config.navigationPreviewEndpoint
+        ? App.config.navigationPreviewEndpoint
+        : "Navigation Service Endpoint";
     }
 
     const statusDiv = this.connectionStatusElement.closest("div");
@@ -110,7 +146,15 @@ export class ConnectionSection {
     }
   }
 
-  getReleaseParameterContent(endpoint, apikey, navigationEndpoint){
+  /**
+   * Creates a html snippet to show the release parameters.
+   *
+   * @param {String} endpoint of the caas
+   * @param {String} apikey of the caas
+   * @param {String} navigationEndpoint of the navigation service
+   * @returns {String} html
+   */
+  getReleaseParameterContent(endpoint, apikey, navigationEndpoint) {
     return `<div>
               <div class="w-full px-3 mb-6">
                 <label class="block mb-2 text-sm text-gray-800 uppercase tracking-wide font-bold">CaaS Endpoint
@@ -135,5 +179,4 @@ export class ConnectionSection {
               </div>
             </div>`;
   }
-  
 }

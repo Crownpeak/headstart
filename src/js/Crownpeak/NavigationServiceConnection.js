@@ -1,3 +1,6 @@
+/**
+ * Holds a navigation service connection.
+ */
 export class NavigationServiceConnection {
   constructor(navigationEndpoint) {
     this.navigationEndpoint = navigationEndpoint;

@@ -2,6 +2,9 @@ import { Modal } from "../Component/Modal";
 import { RichText } from "../Component/RichText";
 import { DOMHelper } from "../Utility/DOMHelper";
 
+/**
+ * A section that has been developed according to the existing template in the CMS. The information from the section created in the CMS is output.
+ */
 export class CodeDescriptionSection {
   data;
   previewId;
@@ -10,6 +13,9 @@ export class CodeDescriptionSection {
   code;
   textAfter;
 
+  /**
+   * Creates an instance of CodeDescriptionSection.
+   */
   constructor(data) {
     this.data = data;
     this.previewId = data.identifier ? data.identifier : "";
@@ -27,6 +33,11 @@ export class CodeDescriptionSection {
       : "";
   }
 
+  /**
+   * Creates a new HTML element with the entire content of this section.
+   *
+   * @returns {HTMLElement} of this section
+   */
   render() {
     const resultElement = DOMHelper.htmlToElement(this.html());
     // Add code
@@ -43,12 +54,23 @@ export class CodeDescriptionSection {
     });
     // Add text
     const richTextBefore = new RichText(this.textBefore);
-    DOMHelper.appendNodes(resultElement, '[data-preview-id="#st_text_before"]', richTextBefore.render());
+    DOMHelper.appendNodes(
+      resultElement,
+      '[data-preview-id="#st_text_before"]',
+      richTextBefore.render()
+    );
     const richTextAfter = new RichText(this.textAfter);
-    DOMHelper.appendNodes(resultElement, '[data-preview-id="#st_text_after"]', richTextAfter.render());
+    DOMHelper.appendNodes(
+      resultElement,
+      '[data-preview-id="#st_text_after"]',
+      richTextAfter.render()
+    );
     return resultElement;
   }
 
+  /**
+   * Opens a dialog to display the data for this section that was provided by the caas endpoint.
+   */
   showInfoModal() {
     const modal = Modal.instance();
 
@@ -67,6 +89,11 @@ export class CodeDescriptionSection {
     modal.show(codeBlock);
   }
 
+  /**
+   * Returns a HTML snippet with the CaaS content.
+   *
+   * @returns {String} html
+   */
   html() {
     return `<section class="w-full relative" data-preview-id="${this.previewId}">
                   <div class="pt-6 lg:px-8 lg:pt-8 pb-12 xl:pb-24 lg:pb-16">

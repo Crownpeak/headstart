@@ -1,28 +1,47 @@
 import { App } from "../App";
-import Prism from 'prismjs';
+import Prism from "prismjs";
 
+/**
+ * Section for displaying the navigation based on the specified navigation endpoint.
+ */
 export class NavigationSection {
+  /**
+   * Creates an instance of NavigationSection.
+   */
   constructor() {
     this.render();
   }
 
+    /**
+   * Fetches the navigation data from the navigation endpoint and displays it.
+   */
   render() {
     const codeElement = document.querySelector("#navigation-js");
     const url = App.config ? App.config.navigationPreviewEndpoint : "URL";
-    codeElement.innerHTML = Prism.highlight(this.getJSSnippet(url), Prism.languages.javascript, 'javascript');
-
+    codeElement.innerHTML = Prism.highlight(
+      this.getJSSnippet(url),
+      Prism.languages.javascript,
+      "javascript"
+    );
     const responseElement = document.querySelector("#navigation-response");
     if (App.navigationService) {
       // TODO: Language (planned for a future version)
       App.navigationService.fetchRoutes("en_GB").then((response) => {
-        if(response){
-          const jsonString = JSON.stringify(response,null,2);
-          responseElement.innerHTML = Prism.highlight(jsonString, Prism.languages.javascript, 'javascript');
-        }        
+        if (response) {
+          const jsonString = JSON.stringify(response, null, 2);
+          responseElement.innerHTML = Prism.highlight(
+            jsonString,
+            Prism.languages.javascript,
+            "javascript"
+          );
+        }
       });
     }
   }
 
+  /**
+   * A JavaScript snippet displayed as an example for a request.
+   */
   getJSSnippet(navigationEndpoint) {
     return `
       const requestUrl = new URL("${navigationEndpoint}");

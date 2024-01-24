@@ -1,18 +1,39 @@
 import { App } from "./App";
 
+/**
+ * The router is required to resolve the URL paths with
+ * the navigation provided by the navigation service.
+ */
 export class Router {
-  constructor(navInfo) {    
+  /**
+   * Creates an instance of Router.
+   */
+  constructor(navInfo) {
     this.navInfo = navInfo;
   }
 
+  /**
+   * Creates an instance of Router.
+   */
+  /**
+   * Returns the top level of the navigation
+   * 
+   * @returns {JSON}
+   */
   getTopLevel() {
     return Object.values(this.navInfo.idMap).filter(
       (item) => !item.parentIds.length
     );
   }
 
-  // Test each route for potential match
-  getPotentialRoute(path) {    
+  
+  /**
+   * Get route for path
+   * 
+   * @param {String} path to look for
+   * @returns {Promise<Route>}
+   */
+  getPotentialRoute(path) {
     if (path === "/") {
       return Route.startpageRoute();
     }
@@ -20,12 +41,18 @@ export class Router {
     return this.getRouteForId(potentialRouteId);
   }
 
+ /**
+   * Get route for a CMS preview id
+   * 
+   * @param {String} previewId to look for
+   * @returns {Promise<Route>}
+   */
   getRouteForPreviewId(previewId) {
     return new Promise((resolve, reject) => {
       const previewIdEl = PreviewId.parse(previewId);
-      if (!previewIdEl.local){
+      if (!previewIdEl.local) {
         throw new Error("Missing local");
-      }      
+      }
       let foundRoute = this.getRouteForId(previewIdEl.id);
       if (foundRoute.language === previewIdEl.local) {
         resolve(foundRoute);
@@ -45,16 +72,24 @@ export class Router {
     });
   }
 
-  getRouteForId(potentialRouteId) {    
+   /**
+   * Creates a new route based on the navigation data (if available) and returns it.
+   * 
+   * @param {String} potentialRouteId to look for
+   * @returns {Route}
+   */
+  getRouteForId(potentialRouteId) {
     if (this.navInfo.idMap.hasOwnProperty(potentialRouteId)) {
       const foundRoute = this.navInfo.idMap[potentialRouteId];
       const local = this.navInfo.meta.identifier.languageId;
-      return new Route(foundRoute.seoRoute,
-                PreviewId.assembleId(foundRoute.caasDocumentId, local),
-                foundRoute.contentReference,
-                local);
+      return new Route(
+        foundRoute.seoRoute,
+        PreviewId.assembleId(foundRoute.caasDocumentId, local),
+        foundRoute.contentReference,
+        local
+      );
     }
-    return Route.notFoundPage();;
+    return Route.notFoundPage();
   }
 
   getMatchingRouteId(path) {
@@ -73,59 +108,64 @@ export class Router {
   delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
-
 }
 
-export class PreviewId{
-
-  constructor(id, local = null){
+/**
+ * Helper class for handling preview IDs.
+ */
+export class PreviewId {
+  constructor(id, local = null) {
     this.id = id;
     this.local = local;
   }
 
-  combinedId(){
-    return this.assembleId(id, local)
+  combinedId() {
+    return this.assembleId(id, local);
   }
 
   /**
-   * Tries to create a preview ID based on the specified parameter. 
+   * Tries to create a preview ID based on the specified parameter.
    * Valid are string representations of preview IDs with and without local.
    * E.g.:
    *  b3fb80a9-7c2b-43a3-93c0-0d0922f4dc9b
    *  b3fb80a9-7c2b-43a3-93c0-0d0922f4dc9b.en_GB
-   *  
-   * @param {String} previewIdString 
+   *
+   * @param {String} previewIdString
    * @returns a {@link PreviewId} based of the given parameters
    */
-  static parse(previewIdString){
+  static parse(previewIdString) {
     let regExpRes = this.previewIdWithLocal(previewIdString);
-    if(regExpRes) {      
+    if (regExpRes) {
       return new PreviewId(regExpRes[1], regExpRes[2]);
     }
     regExpRes = this.previewId(previewIdString);
-    if(regExpRes) {      
+    if (regExpRes) {
       return new PreviewId();
     }
     return "";
   }
-  
 
-  static previewIdWithLocal(id){
-    return new RegExp("^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}).([a-z]{2}_[A-Z]{2})").exec(id);
+  static previewIdWithLocal(id) {
+    return new RegExp(
+      "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}).([a-z]{2}_[A-Z]{2})"
+    ).exec(id);
   }
 
-  static previewId(id){
-    return new RegExp("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$").exec(id);
+  static previewId(id) {
+    return new RegExp(
+      "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    ).exec(id);
   }
 
-  static assembleId(id, local){
-    return id.concat('.', local);
+  static assembleId(id, local) {
+    return id.concat(".", local);
   }
-
 }
 
+/**
+ * Contains all information about a route.
+ */
 export class Route {
-
   constructor(path, previewId, contentUrl, language, label, status = 200) {
     this.path = path;
     this.previewId = previewId;
@@ -135,12 +175,11 @@ export class Route {
     this.status = status;
   }
 
-  static startpageRoute(){
+  static startpageRoute() {
     return new Route("/", null, null, null, "Startpage", 200);
   }
 
-  static notFoundPage(){
+  static notFoundPage() {
     return new Route("/", null, null, null, "404-Error", 404);
   }
-
 }

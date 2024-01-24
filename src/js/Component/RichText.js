@@ -1,10 +1,22 @@
 import { DOMHelper } from "../Utility/DOMHelper";
 import { Link } from "./Link";
+
+/**
+ * Renders a CMS rich text
+ */
 export class RichText {
+  /**
+   * Creates an instance of RichText.
+   */
   constructor(data) {
     this.data = data;
   }
 
+  /**
+   * Parses the specified Rich Text XML information and generates new HTML elements accordingly.
+   * 
+   * @returns {HTMLElement} for that rich text
+   */
   render() {
     const enhancedData = "<root>" + this.data + "</root>";
     const domParser = new DOMParser();
@@ -19,14 +31,23 @@ export class RichText {
     return textElements;
   }
 
+  /**
+   * Creates a new HTML element based on the specified XML.
+   * 
+   * @param {xmlNode} xmlNode 
+   * @returns {HTMLElement}
+   */
   parseNode(xmlNode) {
     if (xmlNode instanceof Text) {
+      // If it is just text
       return xmlNode.wholeText;
     } else if (xmlNode instanceof Element) {
+      // the CMS format template type
       const type =
         xmlNode instanceof Element && xmlNode.hasAttribute("data-fs-type")
           ? xmlNode.getAttribute("data-fs-type")
           : xmlNode.localName;
+      // handling of the different types
       switch (type) {
         case "link.internal_link":
         case "link.external_link":

@@ -1,45 +1,65 @@
 import { DOMHelper } from "../Utility/DOMHelper";
 
-export class Modal{
-    static modal;
+/**
+ * Modal that can be used to display additional information.
+ */
+export class Modal {
+  static modal;
 
-    constructor(){
-        this.modalElement = document.querySelector("#app-modal");
-        if(!this.modalElement){
-            const appElement = document.querySelector("#app");
-            this.modalElement = DOMHelper.htmlToElement(this.html());
-            const closeButton = this.modalElement.querySelector("button");
-            closeButton.addEventListener("click", () => {
-                this.hide();
-            });
-            const modalBackground = this.modalElement.querySelector("[data-modal-background]");
-            modalBackground.addEventListener("click", () => {
-                this.hide();
-            });
-            appElement.appendChild(this.modalElement);
-        }        
+  /**
+   * Creates an instance of Modal.
+   */
+  constructor() {
+    this.modalElement = document.querySelector("#app-modal");
+    if (!this.modalElement) {
+      const appElement = document.querySelector("#app");
+      this.modalElement = DOMHelper.htmlToElement(this.html());
+      const closeButton = this.modalElement.querySelector("button");
+      closeButton.addEventListener("click", () => {
+        this.hide();
+      });
+      const modalBackground = this.modalElement.querySelector(
+        "[data-modal-background]"
+      );
+      modalBackground.addEventListener("click", () => {
+        this.hide();
+      });
+      appElement.appendChild(this.modalElement);
     }
+  }
 
-    static instance() {
-        if (!this.modal) {
-            this.modal = new Modal();
-        }
-        return this.modal;
+  /**
+   * Returns a new or an existing instance of a modal.
+   */
+  static instance() {
+    if (!this.modal) {
+      this.modal = new Modal();
     }
+    return this.modal;
+  }
 
-    show(content){
-        console.log("show modal", content);
-        const contentDiv = this.modalElement.querySelector(".content-tabs > div");
-        contentDiv.replaceChildren(content);        
-        this.modalElement.classList.remove("hidden"); 
-    }
+  /**
+   * Action to show the transferred content.
+   */
+  show(content) {
+    console.log("show modal", content);
+    const contentDiv = this.modalElement.querySelector(".content-tabs > div");
+    contentDiv.replaceChildren(content);
+    this.modalElement.classList.remove("hidden");
+  }
 
-    hide(){
-        this.modalElement.classList.toggle("hidden");
-    }
+  /**
+   * Action to hide the modal
+   */
+  hide() {
+    this.modalElement.classList.toggle("hidden");
+  }
 
-    html(){
-        return `<div id="app-modal" class="fixed inset-0 z-50 hidden">
+  /**
+   * HTML Snippet of a modal
+   */
+  html() {
+    return `<div id="app-modal" class="fixed inset-0 z-50 hidden">
                     <div class="absolute w-full h-full bg-gray-900 opacity-50" data-modal-background></div>
                     <div tabindex="-1"
                     class="flex w-full md:inset-0 h-full p-4 items-center justify-center overflow-x-hidden overflow-y-auto ">
@@ -86,7 +106,6 @@ export class Modal{
                         </div>
                     </div>
                     </div>
-                </div>`;      
-    }
-
+                </div>`;
+  }
 }
