@@ -105,7 +105,7 @@ export class TextImage {
                           <span class="inline-block py-2 px-3 mb-10 text-xs bg-pink-50 text-pink-900 font-semibold rounded-full">
                             This is an example of text and image
                           </span>
-                          <h2 class="font-heading text-5xl xs:text-6xl font-bold text-gray-900 mb-10">${this.title}</h2>
+                          <h2 class="font-heading text-5xl xs:text-6xl font-bold text-gray-900 mb-10" data-preview-id="${this.previewId}/st_headline">${this.title}</h2>
                           <div class="md:flex max-w-3xl px-5 py-5 mb-10 items-center bg-white shadow-lg rounded-3xl">
                               <div class="text-lg text-gray-700" data-preview-id="${this.previewId}/st_text">                                
                               </div>

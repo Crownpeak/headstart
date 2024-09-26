@@ -110,7 +110,7 @@ export class CodeDescriptionSection {
                     <div class="flex flex-wrap -mx-4">
                       <div class="w-full px-4 mb-16 lg:mb-0">
                         <div class="max-w-full mx-auto lg:mx-0">                          
-                          <h2 class="font-heading text-5xl xs:text-6xl font-bold text-gray-900 mb-10">${this.headline}</h2>
+                          <h2 class="font-heading text-5xl xs:text-6xl font-bold text-gray-900 mb-10" data-preview-id="${this.previewId}/st_headline">${this.headline}</h2>
                           <div class="md:flex max-w-full px-5 py-5 mb-10 items-center bg-white shadow-lg rounded-3xl">
                               <div class="text-lg text-gray-700" data-preview-id="#st_text_before">                                                                
                               </div>
