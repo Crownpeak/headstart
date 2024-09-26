@@ -18,44 +18,19 @@ export class TextImage {
    * Creates an instance of TextImage.
    */
   constructor(data) {
-    this.data = data;
+    this.updateData(data);
   }
 
-  /**
-   * Creates a new text image section.
-   *
-   * @param {String} data of the text image section
-   * @returns a new {@link TextImage}
-   */
-  static async create(data) {
-    const textImage = new TextImage(data);
-    textImage.previewId = data.identifier ? data.identifier : "";
-    textImage.title = data?.formData?.st_headline?.value
+  updateData(data) {
+    this.data = data;
+    this.previewId = data.identifier ? data.identifier : "";
+    this.title = data?.formData?.st_headline?.value
       ? data?.formData?.st_headline?.value
       : "";
-    textImage.text = data?.formData?.st_text?.value
+    this.text = data?.formData?.st_text?.value
       ? data?.formData?.st_text?.value
       : "";
-    if (data?.formData?.st_image?.value?.url) {
-      /*
-          Image request
-          All information about an image and also the URLs to the individual resolutions 
-          are stored within the caas in a separate metadata document. To get this information, another request must be made. 
-        */
-      const imageData = await App.caasConnection.fetchByUrl(
-        data?.formData?.st_image?.value?.url
-      );
-      if (imageData?.resolutionsMetaData?.["4x3_M"]) {
-        textImage.imageUrl = imageData?.resolutionsMetaData?.["4x3_M"]?.url
-          ? imageData?.resolutionsMetaData?.["4x3_M"]?.url
-          : "";
-      } else if (imageData?.resolutionsMetaData?.ORIGINAL) {
-        textImage.imageUrl = imageData?.resolutionsMetaData?.ORIGINAL?.url
-          ? imageData?.resolutionsMetaData?.ORIGINAL?.url
-          : "";
-      }
-    }
-    return textImage;
+    this.imageUrl = data?.formData?.st_image?.value?.url;
   }
 
   /**
@@ -64,18 +39,36 @@ export class TextImage {
    * @returns {HTMLElement} of this section
    */
   render() {
-    const resultElement = DOMHelper.htmlToElement(this.html());
-    const devButton = resultElement.querySelector("button");
+    const newHtmlNode = DOMHelper.htmlToElement(this.html());
+    const devButton = newHtmlNode.querySelector("button");
     devButton.addEventListener("click", (event) => {
       this.showInfoModal();
     });
     const richText = new RichText(this.text);
     DOMHelper.appendNodes(
-      resultElement,
-      '[data-preview-id="#st_text"]',
+      newHtmlNode,
+      `[data-preview-id="${this.previewId}/st_text"]`,
       richText.render()
     );
-    return resultElement;
+
+    if (this.imageUrl) {
+      App.caasConnection
+        .resolveImage(this.imageUrl, "4x3_M")
+        .then((imageSrc) => {
+          if (!imageSrc) return;
+          const element = newHtmlNode.querySelector(
+            `[data-preview-id="${this.previewId}/st_image"]`
+          );
+          element.src = imageSrc;
+        });
+    }
+
+    if (this.htmlNode) {
+      this.htmlNode.replaceWith(newHtmlNode);
+    }
+    this.htmlNode = newHtmlNode;
+
+    return newHtmlNode;
   }
 
   /**
@@ -83,8 +76,8 @@ export class TextImage {
    */
   showInfoModal() {
     const modal = Modal.instance();
-
     const jsonString = JSON.stringify(this.data, null, 2);
+
     const codeSnippet = `<pre class="max-h-half-screen overflow-auto language-javascript">
         <code class="language-javascript"></code>
       </pre>`;
@@ -95,7 +88,6 @@ export class TextImage {
       Prism.languages.javascript,
       "javascript"
     );
-
     modal.show(codeBlock);
   }
 
@@ -115,14 +107,15 @@ export class TextImage {
                           </span>
                           <h2 class="font-heading text-5xl xs:text-6xl font-bold text-gray-900 mb-10">${this.title}</h2>
                           <div class="md:flex max-w-3xl px-5 py-5 mb-10 items-center bg-white shadow-lg rounded-3xl">
-                              <div class="text-lg text-gray-700" data-preview-id="#st_text">                                
+                              <div class="text-lg text-gray-700" data-preview-id="${this.previewId}/st_text">                                
                               </div>
                           </div>                          
                         </div>
                       </div>
                       <div class="w-full lg:w-1/2 px-4">
                         <img class="mx-auto lg:mr-0"
-                            src="${this.imageUrl}" alt="">
+                            data-preview-id="${this.previewId}/st_image"
+                            src="${this.imageUrl}" alt="" >
                       </div>
                     </div>
                   </div>

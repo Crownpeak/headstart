@@ -86,6 +86,23 @@ export class CaaSConnection {
         console.log(error);
       });
   }
+  /**
+   * Requests the metadata of the image from the CaaS and searches for the URL of the specified resolution.
+   * If no suitable resolution can be found, the ORIGINAL resolution is used.
+   *
+   * @param {String} url to receive the image metadata
+   * @param {String} resolution to get the url for
+   * @returns a url as string
+   */
+  async resolveImage(url, resolution) {
+    const imageData = await this.fetchByUrl(url);
+    if (imageData?.resolutionsMetaData?.[resolution]) {
+      return imageData?.resolutionsMetaData?.[resolution]?.url;
+    } else if (imageData?.resolutionsMetaData?.ORIGINAL) {
+      return imageData?.resolutionsMetaData?.ORIGINAL?.url;
+    }
+    return "";
+  }
 
   getDefaultHeaders() {
     const headers = new Headers();

@@ -17,6 +17,10 @@ export class CodeDescriptionSection {
    * Creates an instance of CodeDescriptionSection.
    */
   constructor(data) {
+    this.updateData(data);
+  }
+
+  updateData(data) {
     this.data = data;
     this.previewId = data.identifier ? data.identifier : "";
     this.headline = data?.formData?.st_headline?.value
@@ -39,33 +43,39 @@ export class CodeDescriptionSection {
    * @returns {HTMLElement} of this section
    */
   render() {
-    const resultElement = DOMHelper.htmlToElement(this.html());
+    const newHtmlNode = DOMHelper.htmlToElement(this.html());
     // Add code
-    const codeElement = resultElement.querySelector("code");
+    const codeElement = newHtmlNode.querySelector("code");
     codeElement.innerHTML = Prism.highlight(
       this.code,
       Prism.languages.javascript,
       "javascript"
     );
     // Add dev button
-    const devButton = resultElement.querySelector("button");
+    const devButton = newHtmlNode.querySelector("button");
     devButton.addEventListener("click", (event) => {
       this.showInfoModal();
     });
     // Add text
     const richTextBefore = new RichText(this.textBefore);
     DOMHelper.appendNodes(
-      resultElement,
+      newHtmlNode,
       '[data-preview-id="#st_text_before"]',
       richTextBefore.render()
     );
     const richTextAfter = new RichText(this.textAfter);
     DOMHelper.appendNodes(
-      resultElement,
+      newHtmlNode,
       '[data-preview-id="#st_text_after"]',
       richTextAfter.render()
     );
-    return resultElement;
+
+    if (this.htmlNode) {
+      this.htmlNode.replaceWith(newHtmlNode);
+    }
+    this.htmlNode = newHtmlNode;
+
+    return newHtmlNode;
   }
 
   /**

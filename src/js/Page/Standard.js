@@ -1,4 +1,4 @@
-import * as TPP_SNAP from "fs-tpp-api/snap";
+import { App } from "../App";
 import { TextImage } from "../Section/TextImage";
 import { DefaultSection } from "../Section/DefaultSection";
 import { PageHeaderSection } from "../Section/PageHeaderSection";
@@ -19,17 +19,19 @@ export class Standard {
   render() {
     const mainElement = document.querySelector("#app main");
     // Sets the preview element of the ContentCreator, the navigation and workflow are updated accordingly.
-    TPP_SNAP.setPreviewElement(this.data._id);
+    if (App.isContentCreator && TPP_SNAP) {
+      TPP_SNAP.setPreviewElement(this.data._id);
+    }
     if (this.data.hasOwnProperty("page")) {
       const page = this.data.page;
       // A simple section to output the content of the page.
       this.sectionList = [];
       this.sectionList.push(new PageHeaderSection(page));
-      this.collectSections().then(() => {
-        mainElement.replaceChildren();
-        this.sectionList.forEach((section) => {
-          mainElement.appendChild(section.render());
-        });
+
+      this.collectSections();
+      mainElement.replaceChildren();
+      this.sectionList.forEach((section) => {
+        mainElement.appendChild(section.render());
       });
     }
   }
@@ -39,15 +41,26 @@ export class Standard {
    */
   reRender(data = null) {
     if (data) {
-      this.data = data;
+      // Check if the page data changed
+      if (this.data.identifier === data.identifier) {
+        this.data = data;
+        this.render();
+      } else {
+        const changedSection = this.sectionList.find(
+          (section) => section.data.identifier === data.identifier
+        );
+        if (changedSection) {
+          changedSection.updateData(data);
+          changedSection.render();
+        }
+      }
     }
-    this.render();
   }
 
   /**
    * Iterate through all bodies and sections
    */
-  async collectSections() {
+  collectSections() {
     if (
       this.data.page.hasOwnProperty("children") &&
       this.data.page.children.length > 0
@@ -55,7 +68,7 @@ export class Standard {
       for (const body of this.data.page.children) {
         if (body.hasOwnProperty("children") && body.children.length > 0) {
           for (const section of body.children) {
-            await this.createSection(section);
+            this.createSection(section);
           }
         }
       }
@@ -71,7 +84,7 @@ export class Standard {
   async createSection(section) {
     switch (section.template.uid) {
       case "text_image":
-        this.sectionList.push(await TextImage.create(section));
+        this.sectionList.push(new TextImage(section));
         break;
       case "code_description":
         this.sectionList.push(new CodeDescriptionSection(section));

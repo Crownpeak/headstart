@@ -6,8 +6,6 @@ import { InfoPage } from "./Page/InfoPage";
 import { Standard } from "./Page/Standard";
 import { Navigation } from "./Component/Navigation";
 
-import * as TPP_SNAP from "fs-tpp-api/snap";
-
 /**
  * The HeadStart application
  */
@@ -27,11 +25,12 @@ export class App {
    * @param {HeadlessConfiguration} config
    */
   static create(config, isContentCreator = false) {
+    console.log("Create new app");
     this.isContentCreator = isContentCreator;
     // init the internal navigation
     this.initInternalNavigation();
     // init ContentCreator SNAP
-    if (this.isContentCreator) {
+    if (this.isContentCreator && TPP_SNAP) {
       this.initSNAPTPP();
     }
     // Connect
@@ -57,7 +56,7 @@ export class App {
     this.storeConfigToSessionStorage(config);
     this.config = config;
     this.connect().then(() => {
-      this.reRender();
+      this.render();
     });
   }
 
@@ -72,7 +71,7 @@ export class App {
 
   /**
    * Loads a configuration from the browser's session storage.
-   * 
+   *
    * @returns {JSON}
    */
   static loadConfigFromSessionStorage() {
@@ -81,11 +80,11 @@ export class App {
   }
 
   /**
-   * This method is responsible for initializing 
+   * This method is responsible for initializing
    * custom handling of browser navigation buttons such
-   * as 'Back' and 'Forward,' as well as internal 
+   * as 'Back' and 'Forward,' as well as internal
    * links within the application.
-   * 
+   *
    * @returns {JSON}
    */
   static initInternalNavigation() {
@@ -111,9 +110,9 @@ export class App {
     });
   }
 
-    /**
-   * When we are in the preview of the CMS ContentCreator, 
-   * CallBack functions must be defined for various actions.   
+  /**
+   * When we are in the preview of the CMS ContentCreator,
+   * CallBack functions must be defined for various actions.
    */
   static initSNAPTPP() {
     TPP_SNAP.onRequestPreviewElement(async (previewId) => {
@@ -123,21 +122,28 @@ export class App {
         this.navigateToPreviewId(previewId);
       }
     });
+    TPP_SNAP.onContentChange(async (node, previewId, content) => {
+      // Rebuild the current page
+      console.log("onContentChange", node, previewId, content);
+      this.page.reRender(content);
+    });
+
     TPP_SNAP.onRerenderView(async () => {
       // Rebuild the current page
       const currentPreviewPageId = this.page.data._id;
-      console.log("onRerenderView", currentPreviewPageId);
+      console.log("onRerenderView", currentPreviewPageId, this.page.data);
+      /*
       this.caasConnection.fetchById(currentPreviewPageId).then((data) => {
         this.page.reRender(data);
       });
+      */
     });
   }
-
 
   /**
    * When a configuration is provided, this method endeavors
    * to establish connections to both the Content as a Service (CaaS)
-   * and the navigation service. Additionally, it initializes 
+   * and the navigation service. Additionally, it initializes
    * the router and navigation.
    */
   static async connect() {
@@ -237,27 +243,28 @@ export class App {
 
   /**
    * This method tries to fetch a relevant document
-   * from the Content as a Service (CaaS) based on the current route. 
-   * Upon finding a corresponding document, it looks for a 
+   * from the Content as a Service (CaaS) based on the current route.
+   * Upon finding a corresponding document, it looks for a
    * suitable page implementation and proceeds to instantiate a new object.
-   * 
-   * @returns a page 
+   *
+   * @returns a page
    */
   static getPage() {
     return new Promise((resolve, reject) => {
-      if (this.currentRoute.path === "/") {
-        resolve(new InfoPage());
-      } else {
-        this.caasConnection
-          .fetchByUrl(this.currentRoute.contentUrl)
-          .then((documentData) => {
-            resolve(new Standard(documentData));
-          })
-          .catch(() => {
-            console.log("Error fetching caas");
-            resolve(new InfoPage());
-          });
-      }
+      if (this.currentRoute.path)
+        if (this.currentRoute.path === "/") {
+          resolve(new InfoPage());
+        } else {
+          this.caasConnection
+            .fetchByUrl(this.currentRoute.contentUrl)
+            .then((documentData) => {
+              resolve(new Standard(documentData));
+            })
+            .catch(() => {
+              console.log("Error fetching caas");
+              resolve(new InfoPage());
+            });
+        }
     });
   }
 
