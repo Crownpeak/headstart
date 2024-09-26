@@ -126,17 +126,17 @@ export class App {
       // Rebuild the current page
       console.log("onContentChange", node, previewId, content);
       this.page.reRender(content);
+      // any: if the handler doesn't return anything, onRerenderView~Handler will be triggered.
+      return true;
     });
 
     TPP_SNAP.onRerenderView(async () => {
       // Rebuild the current page
       const currentPreviewPageId = this.page.data._id;
-      console.log("onRerenderView", currentPreviewPageId, this.page.data);
-      /*
+      console.log("onRerenderView", currentPreviewPageId, this.page.data);      
       this.caasConnection.fetchById(currentPreviewPageId).then((data) => {
         this.page.reRender(data);
-      });
-      */
+      });      
     });
   }
 
