@@ -17,6 +17,10 @@ export class CodeDescriptionSection {
    * Creates an instance of CodeDescriptionSection.
    */
   constructor(data) {
+    this.updateData(data);
+  }
+
+  updateData(data) {
     this.data = data;
     this.previewId = data.identifier ? data.identifier : "";
     this.headline = data?.formData?.st_headline?.value
@@ -39,33 +43,39 @@ export class CodeDescriptionSection {
    * @returns {HTMLElement} of this section
    */
   render() {
-    const resultElement = DOMHelper.htmlToElement(this.html());
+    const newHtmlNode = DOMHelper.htmlToElement(this.html());
     // Add code
-    const codeElement = resultElement.querySelector("code");
+    const codeElement = newHtmlNode.querySelector("code");
     codeElement.innerHTML = Prism.highlight(
       this.code,
       Prism.languages.javascript,
       "javascript"
     );
     // Add dev button
-    const devButton = resultElement.querySelector("button");
+    const devButton = newHtmlNode.querySelector("button");
     devButton.addEventListener("click", (event) => {
       this.showInfoModal();
     });
     // Add text
     const richTextBefore = new RichText(this.textBefore);
     DOMHelper.appendNodes(
-      resultElement,
+      newHtmlNode,
       '[data-preview-id="#st_text_before"]',
       richTextBefore.render()
     );
     const richTextAfter = new RichText(this.textAfter);
     DOMHelper.appendNodes(
-      resultElement,
+      newHtmlNode,
       '[data-preview-id="#st_text_after"]',
       richTextAfter.render()
     );
-    return resultElement;
+
+    if (this.htmlNode) {
+      this.htmlNode.replaceWith(newHtmlNode);
+    }
+    this.htmlNode = newHtmlNode;
+
+    return newHtmlNode;
   }
 
   /**
@@ -100,7 +110,7 @@ export class CodeDescriptionSection {
                     <div class="flex flex-wrap -mx-4">
                       <div class="w-full px-4 mb-16 lg:mb-0">
                         <div class="max-w-full mx-auto lg:mx-0">                          
-                          <h2 class="font-heading text-5xl xs:text-6xl font-bold text-gray-900 mb-10">${this.headline}</h2>
+                          <h2 class="font-heading text-5xl xs:text-6xl font-bold text-gray-900 mb-10" data-preview-id="${this.previewId}/st_headline">${this.headline}</h2>
                           <div class="md:flex max-w-full px-5 py-5 mb-10 items-center bg-white shadow-lg rounded-3xl">
                               <div class="text-lg text-gray-700" data-preview-id="#st_text_before">                                                                
                               </div>
