@@ -8,6 +8,7 @@ import { DOMHelper } from "../Utility/DOMHelper";
  * The information from the section created in the CMS is output.
  */
 export class TextImage {
+  #RESOLUTION = "4x3_M";
   data;
   previewId;
   title;
@@ -53,7 +54,7 @@ export class TextImage {
 
     if (this.imageUrl) {
       App.caasConnection
-        .resolveImage(this.imageUrl, "4x3_M")
+        .resolveImage(this.imageUrl, this.#RESOLUTION)
         .then((imageSrc) => {
           if (!imageSrc) return;
           const element = newHtmlNode.querySelector(
@@ -103,7 +104,7 @@ export class TextImage {
                       <div class="w-full lg:w-1/2 px-4 mb-16 lg:mb-0">
                         <div class="max-w-md lg:max-w-xl mx-auto lg:mx-0">
                           <span class="inline-block py-2 px-3 mb-10 text-xs bg-pink-50 text-pink-900 font-semibold rounded-full">
-                            This is an example of text and image
+                            This is an example of text and image!
                           </span>
                           <h2 class="font-heading text-5xl xs:text-6xl font-bold text-gray-900 mb-10" data-preview-id="${this.previewId}/st_headline">${this.title}</h2>
                           <div class="md:flex max-w-3xl px-5 py-5 mb-10 items-center bg-white shadow-lg rounded-3xl">
@@ -115,7 +116,8 @@ export class TextImage {
                       <div class="w-full lg:w-1/2 px-4">
                         <img class="mx-auto lg:mr-0"
                             data-preview-id="${this.previewId}/st_image"
-                            src="" alt="" >
+                            src="" alt="" 
+                            data-tpp-context-image-resolution="${this.#RESOLUTION}">
                       </div>
                     </div>
                   </div>
