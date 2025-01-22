@@ -3,11 +3,14 @@ import { TextImage } from "../Section/TextImage";
 import { DefaultSection } from "../Section/DefaultSection";
 import { PageHeaderSection } from "../Section/PageHeaderSection";
 import { CodeDescriptionSection } from "../Section/CodeDescriptionSection";
+import { AddContentButton } from "../Utility/AddContentButton";
 
 /**
  * Is required to render the pages of the project. The page information and all sections are output.
  */
 export class Standard {
+  static bodyName = "content";
+
   constructor(data) {
     this.data = data;
     this.sectionList = [];
@@ -24,11 +27,18 @@ export class Standard {
     }
     if (this.data.hasOwnProperty("page")) {
       const page = this.data.page;
-      // A simple section to output the content of the page.
+      // Note: The implementation here is very simple and does not care about the different bodies defined in the CMS.
       this.sectionList = [];
+      // A simple section to output the content of the page.
       this.sectionList.push(new PageHeaderSection(page));
 
       this.collectSections();
+      // Note: This button would have to be defined for each body in order to create new sections in it.
+      if (App.isContentCreator && TPP_SNAP) {
+        this.sectionList.push(
+          new AddContentButton(page.identifier, Standard.bodyName)
+        );
+      }
       mainElement.replaceChildren();
       this.sectionList.forEach((section) => {
         mainElement.appendChild(section.render());
